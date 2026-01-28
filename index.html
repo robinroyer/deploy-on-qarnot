@@ -340,16 +340,31 @@
     }
 
     function triggerSplitView() {
-        const screenW = window.screen.availWidth;
-        const screenH = window.screen.availHeight;
+        const hostLeft = window.screenLeft || window.screenX;
+        const hostTop = window.screenTop || window.screenY;
+        const hostWidth = window.innerWidth;
+        const hostHeight = window.innerHeight;
 
-        window.resizeTo(screenW / 2, screenH);
-        window.moveTo(screenW / 2, 0);
+        const popupWidth = hostWidth / 2;
+        const popupHeight = hostHeight - 200; // Slightly shorter for visual distinction
+        const popupLeft = hostLeft;
+        const popupTop = hostTop + 100;
+
+        const features = `
+            width=${popupWidth},
+            height=${popupHeight},
+            left=${popupLeft},
+            top=${popupTop},
+            resizable=yes,
+            scrollbars=yes,
+            status=no,
+            location=no
+        `;
 
         window.open(
             "https://tasq.qarnot.com/settings/access-token",
             "QarnotSplit",
-            `width=${screenW / 2},height=${screenH - 200},left=0,top=0`
+            features
         );
 
         document.getElementById('dot1').style.background = "var(--qarnot-green)";
