@@ -9,6 +9,8 @@ Deploy tasks on Qarnot Computing from a simple web UI.
 ```bash
 make build
 make serve
+make open
+make stop
 ```
 
 ### Without Docker
@@ -24,7 +26,7 @@ Open http://localhost:3000
 
 1. Get your API token from https://tasq.qarnot.com/settings/access-token
 2. Paste the token in the input field
-3. Click "Lancer Open WebUI" to launch the task
+3. Click to deploy
 
 ## Templates
 
