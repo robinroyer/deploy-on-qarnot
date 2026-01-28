@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Qarnot Split-View Deployer</title>
+    <title>Deploy on Qarnot</title>
     <style>
         :root {
             --qarnot-green: #00e676;
@@ -11,10 +11,10 @@
 
         body, html {
             margin: 0; padding: 0; height: 100%;
-            background-color: #000; /* Fondo negro para el area vacía */
+            background-color: #000;
             font-family: 'Inter', sans-serif;
             display: flex;
-            justify-content: flex-end; /* Mantiene la UI a la derecha */
+            justify-content: flex-end;
         }
 
         .panel-right {
@@ -28,12 +28,14 @@
             align-items: center;
             color: white;
             box-shadow: -20px 0 50px rgba(0,0,0,0.8);
+            overflow-y: auto;
         }
 
         .card {
             width: 80%;
             max-width: 400px;
             text-align: center;
+            padding: 20px 0;
         }
 
         .btn {
@@ -68,15 +70,100 @@
             border-radius: 50%;
             margin-right: 10px;
         }
+
+        .link-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: transparent;
+            border: 2px solid var(--qarnot-green);
+            color: var(--qarnot-green);
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            text-decoration: none;
+            margin: 10px 0;
+            transition: all 0.2s ease;
+        }
+
+        .link-btn:hover {
+            background: var(--qarnot-green);
+            color: black;
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(0, 230, 118, 0.3);
+        }
+
+        .link-btn::after {
+            content: '→';
+            font-size: 1.2rem;
+            transition: transform 0.2s ease;
+        }
+
+        .link-btn:hover::after {
+            transform: translateX(5px);
+        }
+
+        .description {
+            color: #888;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            text-align: left;
+            margin: 20px 0;
+        }
+
+        .section-title {
+            color: #666;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .github-link {
+            color: var(--qarnot-green);
+            text-decoration: none;
+        }
+
+        .github-link:hover {
+            text-decoration: underline;
+        }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
 
     <div class="panel-right">
-        <div class="card">
-            <h1 style="margin-bottom: 0;">Open WebUI</h1>
+        <!-- Landing Page (no template) -->
+        <div id="landingView" class="card hidden">
+            <h1 style="margin-bottom: 0;">Deploy on Qarnot</h1>
+            <p style="color: #666; margin-top: 5px;">One-click deployment tool</p>
+
+            <p class="description">
+                Deploy on Qarnot is a tool that helps you deploy applications and run tasks on
+                <a href="https://qarnot.com" target="_blank" class="github-link">Qarnot Computing</a>
+                infrastructure with a single click.
+            </p>
+
+            <p class="description">
+                Want to add your own template? Submit a pull request to
+                <a href="https://github.com/robinroyer/deploy-on-qarnot" target="_blank" class="github-link">github.com/robinroyer/deploy-on-qarnot</a>
+            </p>
+
+            <div class="section-title">Available Templates</div>
+            <div id="templatesList"></div>
+        </div>
+
+        <!-- Deploy Page (with template) -->
+        <div id="deployView" class="card hidden">
+            <h1 id="title" style="margin-bottom: 0;"></h1>
             <p style="color: #666; margin-top: 5px;">Deploy on Qarnot Computing</p>
-            
+
             <div style="text-align: left; margin-top: 40px;">
                 <label><span class="status-dot" id="dot1"></span> 1. Ouvrir la console à gauche</label>
                 <button class="btn" onclick="triggerSplitView()">
@@ -89,15 +176,54 @@
                 <input type="password" id="token" placeholder="Insérer le token ici...">
             </div>
 
-            <button class="btn" style="background: white; margin-top: 40px;" onclick="deploy()">
-                🚀 Lancer Open WebUI
+            <button id="deployBtn" class="btn" style="background: white; margin-top: 40px;" onclick="deploy()">
             </button>
+
+            <div id="linksContainer" style="display: none; margin-top: 20px;">
+            </div>
         </div>
     </div>
 
 <script>
     const params = new URLSearchParams(window.location.search);
-    const template = params.get('template') || 'hello-world';
+    const template = params.get('template');
+
+    if (template) {
+        showDeployView(template);
+    } else {
+        showLandingView();
+    }
+
+    async function showLandingView() {
+        document.getElementById('landingView').classList.remove('hidden');
+        document.title = 'Deploy on Qarnot';
+
+        try {
+            const response = await fetch('/api/templates');
+            const data = await response.json();
+            const container = document.getElementById('templatesList');
+
+            data.templates.forEach(tmpl => {
+                const displayName = tmpl.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                const a = document.createElement('a');
+                a.href = `?template=${tmpl}`;
+                a.className = 'link-btn';
+                a.innerHTML = `<span>${displayName}</span>`;
+                container.appendChild(a);
+            });
+        } catch (error) {
+            console.error('Failed to load templates:', error);
+        }
+    }
+
+    function showDeployView(template) {
+        document.getElementById('deployView').classList.remove('hidden');
+        const displayName = template.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
+        document.getElementById('title').textContent = displayName;
+        document.getElementById('deployBtn').textContent = `🚀 Lancer ${displayName}`;
+        document.title = `${displayName} - Deploy on Qarnot`;
+    }
 
     function triggerSplitView() {
         const screenW = window.screen.availWidth;
@@ -109,7 +235,7 @@
         window.open(
             "https://tasq.qarnot.com/settings/access-token",
             "QarnotSplit",
-            `width=${screenW / 2},height=${screenH},left=0,top=0`
+            `width=${screenW / 2},height=${screenH - 200},left=0,top=0`
         );
 
         document.getElementById('dot1').style.background = "var(--qarnot-green)";
@@ -117,7 +243,8 @@
 
     async function deploy() {
         const token = document.getElementById('token').value;
-        const btn = document.querySelector('.btn[onclick="deploy()"]');
+        const btn = document.getElementById('deployBtn');
+        const displayName = template.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
         if (token.length < 5) {
             alert("Veuillez entrer un token valide.");
@@ -141,21 +268,29 @@
                 throw new Error(data.error || 'Erreur inconnue');
             }
 
-            btn.textContent = "✅ Tâche lancée !";
+            btn.textContent = "✅ Déploiement terminé !";
             btn.style.background = "var(--qarnot-green)";
-            alert(`Tâche "${template}" lancée avec succès !\n\nVous pouvez suivre son exécution sur tasq.qarnot.com`);
+
+            if (data.links && data.links.length > 0) {
+                const container = document.getElementById('linksContainer');
+                container.innerHTML = '';
+                container.style.display = 'block';
+
+                data.links.forEach(link => {
+                    const a = document.createElement('a');
+                    a.href = link.url;
+                    a.target = '_blank';
+                    a.className = 'link-btn';
+                    a.innerHTML = `<span>${link.text}</span>`;
+                    container.appendChild(a);
+                });
+            }
 
         } catch (error) {
             console.error('Deploy error:', error);
             btn.textContent = "❌ Erreur";
             btn.style.background = "#ff5252";
             alert(`Erreur: ${error.message}`);
-        } finally {
-            setTimeout(() => {
-                btn.textContent = "🚀 Lancer Open WebUI";
-                btn.style.background = "white";
-                btn.disabled = false;
-            }, 3000);
         }
     }
 </script>

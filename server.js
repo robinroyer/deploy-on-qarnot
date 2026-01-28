@@ -55,11 +55,14 @@ async function launchTask(token, templateId) {
 
     const qarnot = new QarnotSDK({ auth: token });
     const taskConfig = {
-        ...template,
-        name: `${template.name}-${Date.now()}`
+        ...template.config,
+        name: `[deploy-on-qarnot] ${template.config.name}`
     };
 
-    return qarnot.tasks.run(taskConfig);
+    const task = await qarnot.tasks.submit(taskConfig);
+    const links = template.getLinks ? template.getLinks(task) : [];
+
+    return { task, links };
 }
 
 const server = http.createServer(async (req, res) => {
@@ -88,8 +91,8 @@ const server = http.createServer(async (req, res) => {
                 return;
             }
 
-            const task = await launchTask(token, template);
-            sendJson(res, 200, { success: true, template, task });
+            const { task, links } = await launchTask(token, template);
+            sendJson(res, 200, { success: true, template, task, links });
 
         } catch (err) {
             console.error('Launch error:', err.message);

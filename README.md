@@ -61,12 +61,20 @@ Then access it at: `http://localhost:3000/?template=my-app`
 GET /api/templates
 ```
 
+## Available Templates
+
+| Template | Deploy |
+|----------|--------|
+| hello-world | [![Deploy on Qarnot](https://deploy-on-qarnot.onrender.com/badge.svg)](https://deploy-on-qarnot.onrender.com/?template=hello-world) |
+| paraview | [![Deploy on Qarnot](https://deploy-on-qarnot.onrender.com/badge.svg)](https://deploy-on-qarnot.onrender.com/?template=paraview) |
+| remote-desktop | [![Deploy on Qarnot](https://deploy-on-qarnot.onrender.com/badge.svg)](https://deploy-on-qarnot.onrender.com/?template=remote-desktop) |
+
 ## Badge
 
 Add a deploy button to your GitHub README:
 
 ```markdown
-[![Deploy on Qarnot](https://your-server.com/badge.svg)](https://your-server.com/?template=my-app)
+[![Deploy on Qarnot](https://deploy-on-qarnot.onrender.com/badge.svg)](https://deploy-on-qarnot.onrender.com/?template=my-app)
 ```
 
-The badge is served at `/badge.svg`.
+The badge is served at `https://deploy-on-qarnot.onrender.com/badge.svg`.
