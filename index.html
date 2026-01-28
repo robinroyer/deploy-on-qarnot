@@ -134,6 +134,74 @@
         .hidden {
             display: none;
         }
+
+        .template-row {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .template-row .link-btn {
+            flex: 1;
+            margin: 0;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid #444;
+            color: #888;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            border-color: var(--qarnot-green);
+            color: var(--qarnot-green);
+        }
+
+        .copy-btn.copied {
+            border-color: var(--qarnot-green);
+            color: var(--qarnot-green);
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: 1px solid #444;
+            color: #888;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-btn:hover {
+            border-color: var(--qarnot-green);
+            color: var(--qarnot-green);
+        }
+
+        .icon-btn.copied {
+            border-color: var(--qarnot-green);
+            color: var(--qarnot-green);
+        }
+
+        .icon-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .footer {
+            color: #444;
+            font-size: 0.75rem;
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+        }
     </style>
 </head>
 <body>
@@ -182,6 +250,10 @@
             <div id="linksContainer" style="display: none; margin-top: 20px;">
             </div>
         </div>
+
+        <div class="footer">
+            This project is not affiliated with Qarnot Computing.
+        </div>
     </div>
 
 <script>
@@ -205,15 +277,57 @@
 
             data.templates.forEach(tmpl => {
                 const displayName = tmpl.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
+                const row = document.createElement('div');
+                row.className = 'template-row';
+
                 const a = document.createElement('a');
                 a.href = `?template=${tmpl}`;
                 a.className = 'link-btn';
                 a.innerHTML = `<span>${displayName}</span>`;
-                container.appendChild(a);
+
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'copy-btn';
+                copyBtn.textContent = 'Copy Badge';
+                copyBtn.onclick = () => copyMarkdown(tmpl, copyBtn);
+
+                const urlBtn = document.createElement('button');
+                urlBtn.className = 'icon-btn';
+                urlBtn.title = 'Copy URL';
+                urlBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>`;
+                urlBtn.onclick = () => copyUrl(tmpl, urlBtn);
+
+                row.appendChild(a);
+                row.appendChild(copyBtn);
+                row.appendChild(urlBtn);
+                container.appendChild(row);
             });
         } catch (error) {
             console.error('Failed to load templates:', error);
         }
+    }
+
+    function copyMarkdown(tmpl, btn) {
+        const baseUrl = 'https://deploy-on-qarnot.onrender.com';
+        const md = `[![Deploy on Qarnot](${baseUrl}/badge.svg)](${baseUrl}/?template=${tmpl})`;
+        navigator.clipboard.writeText(md).then(() => {
+            btn.textContent = 'Copied!';
+            btn.classList.add('copied');
+            setTimeout(() => {
+                btn.textContent = 'Copy Badge';
+                btn.classList.remove('copied');
+            }, 2000);
+        });
+    }
+
+    function copyUrl(tmpl, btn) {
+        const url = `https://deploy-on-qarnot.onrender.com/?template=${tmpl}`;
+        navigator.clipboard.writeText(url).then(() => {
+            btn.classList.add('copied');
+            setTimeout(() => {
+                btn.classList.remove('copied');
+            }, 2000);
+        });
     }
 
     function showDeployView(template) {
