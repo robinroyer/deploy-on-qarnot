@@ -1,0 +1,12 @@
+{
+  "name": "deploy-on-qarnot",
+  "version": "1.0.0",
+  "description": "Deploy Open WebUI on Qarnot Computing",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@qarnot/sdk": "^1.0.0"
+  }
+}

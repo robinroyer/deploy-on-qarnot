@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Qarnot Split-View Deployer</title>
+    <style>
+        :root {
+            --qarnot-green: #00e676;
+            --bg: #121212;
+        }
+
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            background-color: #000; /* Fondo negro para el area vacía */
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: flex-end; /* Mantiene la UI a la derecha */
+        }
+
+        .panel-right {
+            width: 50vw;
+            height: 100vh;
+            background: var(--bg);
+            border-left: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            box-shadow: -20px 0 50px rgba(0,0,0,0.8);
+        }
+
+        .card {
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .btn {
+            background: var(--qarnot-green);
+            color: black;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1rem;
+            margin: 20px 0;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            background: #000;
+            border: 1px solid #444;
+            color: var(--qarnot-green);
+            border-radius: 6px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #555;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="panel-right">
+        <div class="card">
+            <h1 style="margin-bottom: 0;">Open WebUI</h1>
+            <p style="color: #666; margin-top: 5px;">Deploy on Qarnot Computing</p>
+            
+            <div style="text-align: left; margin-top: 40px;">
+                <label><span class="status-dot" id="dot1"></span> 1. Ouvrir la console à gauche</label>
+                <button class="btn" onclick="triggerSplitView()">
+                    Activer le Split-View
+                </button>
+            </div>
+
+            <div style="text-align: left; margin-top: 20px;">
+                <label><span class="status-dot" id="dot2"></span> 2. Coller le token d'accès</label>
+                <input type="password" id="token" placeholder="Insérer le token ici...">
+            </div>
+
+            <button class="btn" style="background: white; margin-top: 40px;" onclick="deploy()">
+                🚀 Lancer Open WebUI
+            </button>
+        </div>
+    </div>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const template = params.get('template') || 'hello-world';
+
+    function triggerSplitView() {
+        const screenW = window.screen.availWidth;
+        const screenH = window.screen.availHeight;
+
+        window.resizeTo(screenW / 2, screenH);
+        window.moveTo(screenW / 2, 0);
+
+        window.open(
+            "https://tasq.qarnot.com/settings/access-token",
+            "QarnotSplit",
+            `width=${screenW / 2},height=${screenH},left=0,top=0`
+        );
+
+        document.getElementById('dot1').style.background = "var(--qarnot-green)";
+    }
+
+    async function deploy() {
+        const token = document.getElementById('token').value;
+        const btn = document.querySelector('.btn[onclick="deploy()"]');
+
+        if (token.length < 5) {
+            alert("Veuillez entrer un token valide.");
+            return;
+        }
+
+        document.getElementById('dot2').style.background = "var(--qarnot-green)";
+        btn.textContent = "⏳ Lancement en cours...";
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/launch', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token, template })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Erreur inconnue');
+            }
+
+            btn.textContent = "✅ Tâche lancée !";
+            btn.style.background = "var(--qarnot-green)";
+            alert(`Tâche "${template}" lancée avec succès !\n\nVous pouvez suivre son exécution sur tasq.qarnot.com`);
+
+        } catch (error) {
+            console.error('Deploy error:', error);
+            btn.textContent = "❌ Erreur";
+            btn.style.background = "#ff5252";
+            alert(`Erreur: ${error.message}`);
+        } finally {
+            setTimeout(() => {
+                btn.textContent = "🚀 Lancer Open WebUI";
+                btn.style.background = "white";
+                btn.disabled = false;
+            }, 3000);
+        }
+    }
+</script>
+
+</body>
+</html>
