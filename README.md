@@ -1,4 +1,4 @@
-# Deploy on Qarnot
+# Deploy on Qarnot [![Deploy on Qarnot](https://deploy-on-qarnot.onrender.com/badge.svg)](https://deploy-on-qarnot.onrender.com)
 
 Deploy tasks on Qarnot Computing from a simple web UI.
 
