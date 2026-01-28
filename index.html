@@ -39,16 +39,6 @@
             50% { transform: translateY(-20px); }
         }
 
-        @media (max-width: 900px) {
-            .panel-left {
-                display: none;
-            }
-            .panel-right {
-                width: 100vw;
-                border-left: none;
-            }
-        }
-
         .panel-right {
             width: 50vw;
             height: 100vh;
@@ -61,6 +51,16 @@
             color: white;
             box-shadow: -20px 0 50px rgba(0,0,0,0.8);
             overflow-y: auto;
+        }
+
+        @media (max-width: 900px) {
+            .panel-left {
+                display: none;
+            }
+            .panel-right {
+                width: 100vw;
+                border-left: none;
+            }
         }
 
         .card {
