@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Deploy on Qarnot</title>
@@ -234,6 +234,30 @@
             margin-top: 40px;
             padding: 20px;
         }
+
+        .lang-switcher {
+            margin-top: 10px;
+        }
+
+        .lang-switcher a {
+            color: #666;
+            text-decoration: none;
+            padding: 0 5px;
+            transition: color 0.2s ease;
+        }
+
+        .lang-switcher a:hover {
+            color: var(--qarnot-green);
+        }
+
+        .lang-switcher a.active {
+            color: var(--qarnot-green);
+            font-weight: bold;
+        }
+
+        .lang-switcher span {
+            color: #444;
+        }
     </style>
 </head>
 <body>
@@ -291,38 +315,38 @@
         <!-- Landing Page (no template) -->
         <div id="landingView" class="card hidden">
             <h1 style="margin-bottom: 0;">Deploy on Qarnot</h1>
-            <p style="color: #666; margin-top: 5px;">One-click deployment tool</p>
+            <p style="color: #666; margin-top: 5px;" data-i18n="landing.subtitle">One-click deployment tool</p>
 
-            <p class="description">
+            <p class="description" data-i18n="landing.description">
                 Deploy on Qarnot is a tool that helps you deploy applications and run tasks on
                 <a href="https://qarnot.com" target="_blank" class="github-link">Qarnot Computing</a>
                 infrastructure with a single click.
             </p>
 
-            <p class="description">
+            <p class="description" data-i18n="landing.contribute">
                 Want to add your own template? Submit a pull request to
                 <a href="https://github.com/robinroyer/deploy-on-qarnot" target="_blank" class="github-link">github.com/robinroyer/deploy-on-qarnot</a>
             </p>
 
-            <div class="section-title">Available Templates</div>
+            <div class="section-title" data-i18n="landing.availableTemplates">Available Templates</div>
             <div id="templatesList"></div>
         </div>
 
         <!-- Deploy Page (with template) -->
         <div id="deployView" class="card hidden">
             <h1 id="title" style="margin-bottom: 0;"></h1>
-            <p style="color: #666; margin-top: 5px;">Deploy on Qarnot Computing</p>
+            <p style="color: #666; margin-top: 5px;" data-i18n="deploy.subtitle">Deploy on Qarnot Computing</p>
 
             <div style="text-align: left; margin-top: 40px;">
-                <label><span class="status-dot" id="dot1"></span> 1. Ouvrir la console à gauche</label>
-                <button class="btn" onclick="triggerSplitView()">
+                <label><span class="status-dot" id="dot1"></span> <span data-i18n="deploy.step1">1. Open the console on the left</span></label>
+                <button class="btn" onclick="triggerSplitView()" data-i18n="deploy.accessToken">
                     Access Qarnot token page
                 </button>
             </div>
 
             <div style="text-align: left; margin-top: 20px;">
-                <label><span class="status-dot" id="dot2"></span> 2. Coller le token d'accès</label>
-                <input type="password" id="token" placeholder="Insérer le token ici...">
+                <label><span class="status-dot" id="dot2"></span> <span data-i18n="deploy.step2">2. Paste the access token</span></label>
+                <input type="password" id="token" data-i18n-placeholder="deploy.tokenPlaceholder" placeholder="Insert your token here...">
             </div>
 
             <button id="deployBtn" class="btn" style="background: white; margin-top: 40px;" onclick="deploy()">
@@ -333,19 +357,131 @@
         </div>
 
         <div class="footer">
-            This project is not affiliated with Qarnot Computing.
+            <span data-i18n="footer.disclaimer">This project is not affiliated with Qarnot Computing.</span>
+            <div class="lang-switcher">
+                <a href="#" onclick="setLanguage('en'); return false;" id="lang-en">EN</a>
+                <span>|</span>
+                <a href="#" onclick="setLanguage('fr'); return false;" id="lang-fr">FR</a>
+            </div>
         </div>
     </div>
 
 <script>
+    // Translations
+    const translations = {
+        en: {
+            'landing.subtitle': 'One-click deployment tool',
+            'landing.description': 'Deploy on Qarnot is a tool that helps you deploy applications and run tasks on <a href="https://qarnot.com" target="_blank" class="github-link">Qarnot Computing</a> infrastructure with a single click.',
+            'landing.contribute': 'Want to add your own template? Submit a pull request to <a href="https://github.com/robinroyer/deploy-on-qarnot" target="_blank" class="github-link">github.com/robinroyer/deploy-on-qarnot</a>',
+            'landing.availableTemplates': 'Available Templates',
+            'landing.copyBadge': 'Copy Badge',
+            'landing.copied': 'Copied!',
+            'landing.copyUrl': 'Copy URL',
+            'deploy.subtitle': 'Deploy on Qarnot Computing',
+            'deploy.step1': '1. Open the console on the left',
+            'deploy.accessToken': 'Access Qarnot token page',
+            'deploy.step2': '2. Paste the access token',
+            'deploy.tokenPlaceholder': 'Insert your token here...',
+            'deploy.launch': '🚀 Launch {template}',
+            'deploy.invalidToken': 'Please enter a valid token.',
+            'deploy.launching': '⏳ Launching...',
+            'deploy.success': '✅ Deployment complete!',
+            'deploy.error': '❌ Error',
+            'deploy.unknownError': 'Unknown error',
+            'footer.disclaimer': 'This project is not affiliated with Qarnot Computing.'
+        },
+        fr: {
+            'landing.subtitle': 'Déploiement en un clic',
+            'landing.description': 'Deploy on Qarnot est un outil qui vous aide à déployer des applications et exécuter des tâches sur l\'infrastructure <a href="https://qarnot.com" target="_blank" class="github-link">Qarnot Computing</a> en un seul clic.',
+            'landing.contribute': 'Vous souhaitez ajouter votre propre template ? Soumettez une pull request sur <a href="https://github.com/robinroyer/deploy-on-qarnot" target="_blank" class="github-link">github.com/robinroyer/deploy-on-qarnot</a>',
+            'landing.availableTemplates': 'Templates disponibles',
+            'landing.copyBadge': 'Copier Badge',
+            'landing.copied': 'Copié !',
+            'landing.copyUrl': 'Copier l\'URL',
+            'deploy.subtitle': 'Déployer sur Qarnot Computing',
+            'deploy.step1': '1. Ouvrir la console à gauche',
+            'deploy.accessToken': 'Accéder à la page du token Qarnot',
+            'deploy.step2': '2. Coller le token d\'accès',
+            'deploy.tokenPlaceholder': 'Insérer le token ici...',
+            'deploy.launch': '🚀 Lancer {template}',
+            'deploy.invalidToken': 'Veuillez entrer un token valide.',
+            'deploy.launching': '⏳ Lancement en cours...',
+            'deploy.success': '✅ Déploiement terminé !',
+            'deploy.error': '❌ Erreur',
+            'deploy.unknownError': 'Erreur inconnue',
+            'footer.disclaimer': 'Ce projet n\'est pas affilié à Qarnot Computing.'
+        }
+    };
+
+    let currentLang = getPreferredLanguage();
+
+    function getPreferredLanguage() {
+        const saved = localStorage.getItem('lang');
+        if (saved && translations[saved]) return saved;
+        const browserLang = navigator.language.split('-')[0];
+        return translations[browserLang] ? browserLang : 'en';
+    }
+
+    function t(key, replacements = {}) {
+        let text = translations[currentLang][key] || translations['en'][key] || key;
+        Object.entries(replacements).forEach(([k, v]) => {
+            text = text.replace(`{${k}}`, v);
+        });
+        return text;
+    }
+
+    function setLanguage(lang) {
+        if (!translations[lang]) return;
+        currentLang = lang;
+        localStorage.setItem('lang', lang);
+        document.documentElement.lang = lang;
+        updatePageTranslations();
+        updateLangSwitcher();
+    }
+
+    function updatePageTranslations() {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            el.innerHTML = t(key);
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            el.placeholder = t(key);
+        });
+        // Update dynamic elements
+        if (template) {
+            const displayName = template.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+            document.getElementById('deployBtn').textContent = t('deploy.launch', { template: displayName });
+        }
+        // Update copy buttons text
+        document.querySelectorAll('.copy-btn:not(.copied)').forEach(btn => {
+            btn.textContent = t('landing.copyBadge');
+        });
+        document.querySelectorAll('.icon-btn[title]').forEach(btn => {
+            btn.title = t('landing.copyUrl');
+        });
+    }
+
+    function updateLangSwitcher() {
+        document.getElementById('lang-en').classList.toggle('active', currentLang === 'en');
+        document.getElementById('lang-fr').classList.toggle('active', currentLang === 'fr');
+    }
+
     const params = new URLSearchParams(window.location.search);
     const template = params.get('template');
+
+    // Initialize language
+    document.documentElement.lang = currentLang;
+    updateLangSwitcher();
 
     if (template) {
         showDeployView(template);
     } else {
         showLandingView();
     }
+
+    // Apply translations after view is shown
+    updatePageTranslations();
 
     async function showLandingView() {
         document.getElementById('landingView').classList.remove('hidden');
@@ -369,12 +505,12 @@
 
                 const copyBtn = document.createElement('button');
                 copyBtn.className = 'copy-btn';
-                copyBtn.textContent = 'Copy Badge';
+                copyBtn.textContent = t('landing.copyBadge');
                 copyBtn.onclick = () => copyMarkdown(tmpl, copyBtn);
 
                 const urlBtn = document.createElement('button');
                 urlBtn.className = 'icon-btn';
-                urlBtn.title = 'Copy URL';
+                urlBtn.title = t('landing.copyUrl');
                 urlBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>`;
                 urlBtn.onclick = () => copyUrl(tmpl, urlBtn);
 
@@ -392,10 +528,10 @@
         const baseUrl = 'https://deploy-on-qarnot.onrender.com';
         const md = `[![Deploy on Qarnot](${baseUrl}/badge.svg)](${baseUrl}/?template=${tmpl})`;
         navigator.clipboard.writeText(md).then(() => {
-            btn.textContent = 'Copied!';
+            btn.textContent = t('landing.copied');
             btn.classList.add('copied');
             setTimeout(() => {
-                btn.textContent = 'Copy Badge';
+                btn.textContent = t('landing.copyBadge');
                 btn.classList.remove('copied');
             }, 2000);
         });
@@ -416,7 +552,7 @@
         const displayName = template.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
         document.getElementById('title').textContent = displayName;
-        document.getElementById('deployBtn').textContent = `🚀 Lancer ${displayName}`;
+        document.getElementById('deployBtn').textContent = t('deploy.launch', { template: displayName });
         document.title = `${displayName} - Deploy on Qarnot`;
     }
 
@@ -457,12 +593,12 @@
         const displayName = template.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
         if (token.length < 5) {
-            alert("Veuillez entrer un token valide.");
+            alert(t('deploy.invalidToken'));
             return;
         }
 
         document.getElementById('dot2').style.background = "var(--qarnot-green)";
-        btn.textContent = "⏳ Lancement en cours...";
+        btn.textContent = t('deploy.launching');
         btn.disabled = true;
 
         try {
@@ -475,10 +611,10 @@
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || 'Erreur inconnue');
+                throw new Error(data.error || t('deploy.unknownError'));
             }
 
-            btn.textContent = "✅ Déploiement terminé !";
+            btn.textContent = t('deploy.success');
             btn.style.background = "var(--qarnot-green)";
 
             if (data.links && data.links.length > 0) {
@@ -498,9 +634,9 @@
 
         } catch (error) {
             console.error('Deploy error:', error);
-            btn.textContent = "❌ Erreur";
+            btn.textContent = t('deploy.error');
             btn.style.background = "#ff5252";
-            alert(`Erreur: ${error.message}`);
+            alert(`${t('deploy.error')}: ${error.message}`);
         }
     }
 </script>
