@@ -1,6 +1,9 @@
 # Deploy on Qarnot [![Deploy on Qarnot](https://deploy-on-qarnot.onrender.com/badge.svg)](https://deploy-on-qarnot.onrender.com)
 
-Deploy tasks on Qarnot Computing from a simple web UI.
+One-click deployment tool for [Qarnot Computing](https://qarnot.com).
+Add a badge to your project README to let users deploy your application instantly.
+
+![Example](example.gif)
 
 ## Quick Start
 
@@ -80,3 +83,7 @@ Add a deploy button to your GitHub README:
 ```
 
 The badge is served at `https://deploy-on-qarnot.onrender.com/badge.svg`.
+
+---
+
+*This project is not affiliated with Qarnot Computing.*
